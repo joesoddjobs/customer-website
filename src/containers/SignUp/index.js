@@ -1,19 +1,14 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react'
-import { Form, Input, Divider, Button } from 'antd'
-import {
-  Wrapper,
-  BodyWrapper,
-  Header,
-  DividerContainer,
-  SignUpText,
-  ButtonContainer
-} from './styles'
+import { Form, Input, Checkbox, Button } from 'antd'
+import { Wrapper, BodyWrapper, Header } from './styles'
 
-class SignIn extends Component {
+class SignUp extends Component {
   constructor(props) {
     super(props)
-    this._validAuthStates = ['signIn', 'signedOut', 'signedUp']
+    this._validAuthStates = ['signUp']
     this.state = {
       confirmDirty: false,
       autoCompleteResult: []
@@ -72,16 +67,39 @@ class SignIn extends Component {
           offset: 0
         },
         sm: {
-          span: 24,
-          offset: 0
+          span: 12,
+          offset: 6
         }
       }
     }
+
     return (
       <BodyWrapper>
         <Wrapper>
-          <Header>Sign In</Header>
+          <Header>Create Account</Header>
           <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+            <Form.Item label="First Name">
+              {getFieldDecorator('firstName', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please input your first name!',
+                    whitespace: true
+                  }
+                ]
+              })(<Input />)}
+            </Form.Item>
+            <Form.Item label="Last Name">
+              {getFieldDecorator('lastName', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please input your last name!',
+                    whitespace: true
+                  }
+                ]
+              })(<Input />)}
+            </Form.Item>
             <Form.Item label="E-mail">
               {getFieldDecorator('email', {
                 rules: [
@@ -109,23 +127,39 @@ class SignIn extends Component {
                 ]
               })(<Input.Password />)}
             </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
-              <ButtonContainer>
-                <Button type="primary" htmlType="submit">
-                  Sign In
-                </Button>
-              </ButtonContainer>
+            <Form.Item label="Confirm Password" hasFeedback>
+              {getFieldDecorator('confirm', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please confirm your password!'
+                  },
+                  {
+                    validator: this.compareToFirstPassword
+                  }
+                ]
+              })(<Input.Password onBlur={this.handleConfirmBlur} />)}
             </Form.Item>
-            <DividerContainer>
-              <Divider />
-            </DividerContainer>
-            <SignUpText>New to Joe&apos;s Odd Jobs?</SignUpText>
+            <Form.Item label="Phone Number">
+              {getFieldDecorator('phone', {
+                rules: [
+                  { required: true, message: 'Please input your phone number!' }
+                ]
+              })(<Input style={{ width: '100%' }} />)}
+            </Form.Item>
             <Form.Item {...tailFormItemLayout}>
-              <ButtonContainer>
-                <Button type="primary" htmlType="submit">
-                  Create Your Account
-                </Button>
-              </ButtonContainer>
+              {getFieldDecorator('agreement', {
+                valuePropName: 'checked'
+              })(
+                <Checkbox>
+                  I have read the <a href="">agreement</a>
+                </Checkbox>
+              )}
+            </Form.Item>
+            <Form.Item {...tailFormItemLayout}>
+              <Button type="primary" htmlType="submit">
+                Create Account
+              </Button>
             </Form.Item>
           </Form>
         </Wrapper>
@@ -134,6 +168,6 @@ class SignIn extends Component {
   }
 }
 
-const WrappedSignIn = Form.create({ name: 'register' })(SignIn)
+const WrappedSignUp = Form.create({ name: 'register' })(SignUp)
 
-export default WrappedSignIn
+export default WrappedSignUp
