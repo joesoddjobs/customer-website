@@ -123,7 +123,7 @@ class SignIn extends Component {
             <Form.Item {...tailFormItemLayout}>
               <ButtonContainer>
                 <Button type="primary" htmlType="submit">
-                  Create Your Accont
+                  Create Your Account
                 </Button>
               </ButtonContainer>
             </Form.Item>
