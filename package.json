@@ -3,20 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^5.2.4",
     "@rebass/grid": "^6.0.0",
     "@storybook/react": "^5.1.9",
+    "antd": "^3.20.7",
     "apollo-boost": "^0.1.9",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
     "apollo-link": "^1.2.8",
     "apollo-link-http": "^1.5.11",
+    "craco-antd": "^1.11.0",
+    "craco-less": "^1.9.0",
     "graphql": "^14.1.1",
     "react": "^16.4.1",
     "react-apollo": "^2.1.5",
     "react-dom": "^16.4.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^3.0.1",
-    "styled-components": "^4.1.2"
+    "styled-components": "^4.1.2",
+    "webfontloader": "^1.6.28"
   },
   "devDependencies": {
     "eslint-config-airbnb": "^16.1.0",
@@ -28,10 +33,10 @@
     "prettier": "^1.13.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "lint": "eslint \"src/**/*.js\"",
-    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "clean": "rm -rf node_modules && npm i"

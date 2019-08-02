@@ -1,9 +1,23 @@
-import React, { Component } from 'react'
+import React from 'react'
+import { Container } from './styles'
+import {
+  AboutUsBlock,
+  BookAJobBlock,
+  IntroBlock,
+  JobTypesBlock,
+  PriceBlock,
+  TestimonialBlock
+} from './components'
 
-class Home extends Component {
-  render() {
-    return <div>DEV react-frontend-starter!</div>
-  }
-}
+const Home = () => (
+  <Container>
+    <IntroBlock />
+    <JobTypesBlock />
+    <PriceBlock />
+    <AboutUsBlock />
+    <TestimonialBlock />
+    <BookAJobBlock />
+  </Container>
+)
 
 export default Home
