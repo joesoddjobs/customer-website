@@ -18,7 +18,7 @@ const RoutesRow = () => {
   return (
     <Container>
       {Routes}
-      <BookJobButton to="/book-a-job">Book a Job</BookJobButton>
+      <BookJobButton to="/sign-in">Sign In</BookJobButton>
     </Container>
   )
 }
