@@ -1,9 +1,7 @@
 import React from 'react'
 import Header from './components/Header'
-import OverviewBanner from './components/OverviewBanner'
-import WorkerAssuranceBlock from './components/WorkerAssuranceBlock'
 import { Container, Wrapper, BodyWrapper, HeaderText } from './styles'
-import { Table, Divider, Tag } from 'antd'
+import { Table } from 'antd'
 
 const columns = [
   {
