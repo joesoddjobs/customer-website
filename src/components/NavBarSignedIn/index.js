@@ -2,7 +2,7 @@ import React from 'react'
 import { Container, JoesOddJobsLogo } from './styles'
 import RoutesRow from './components/RoutesRow'
 
-const NavBar = () => {
+const NavBarSignedIn = () => {
   return (
     <Container>
       <JoesOddJobsLogo />
@@ -11,4 +11,4 @@ const NavBar = () => {
   )
 }
 
-export default NavBar
+export default NavBarSignedIn
