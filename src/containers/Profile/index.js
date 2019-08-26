@@ -1,6 +1,12 @@
 import React from 'react'
 import Header from './components/Header'
-import { Container, Wrapper, BodyWrapper, ButtonContainer } from './styles'
+import {
+  Container,
+  Wrapper,
+  BodyWrapper,
+  ButtonContainer,
+  Spacer
+} from './styles'
 import { Descriptions, Button } from 'antd'
 
 const Info = () => (
@@ -23,9 +29,16 @@ const Info = () => (
           </Descriptions.Item>
         </Descriptions>
         <ButtonContainer>
-          <Button type="primary" htmlType="submit">
-            Edit Profile
-          </Button>
+          <Spacer>
+            <Button type="primary" htmlType="submit">
+              Edit Profile
+            </Button>
+          </Spacer>
+          <Spacer>
+            <Button type="primary" htmlType="submit">
+              Sign Out
+            </Button>
+          </Spacer>
         </ButtonContainer>
       </Wrapper>
     </BodyWrapper>
