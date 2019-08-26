@@ -1,6 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react'
-import { Form, Input, Divider, Button } from 'antd'
+import { Link } from 'react-router-dom'
+import { Form, Input, Divider, Button, Alert } from 'antd'
+import { Mutation } from 'react-apollo'
+import LOGIN from './graphql'
 import {
   Wrapper,
   BodyWrapper,
@@ -9,6 +12,16 @@ import {
   SignUpText,
   ButtonContainer
 } from './styles'
+
+const storeCustomer = async ({ loginCustomer: { customer, token, error } }) => {
+  if (!error) {
+    await localStorage.setItem('token', token)
+    await localStorage.setItem('customerId', customer.id)
+    console.log(await localStorage.getItem('customerId'))
+  } else {
+    Alert('Could not register! Please try again!')
+  }
+}
 
 class SignIn extends Component {
   constructor(props) {
@@ -20,12 +33,12 @@ class SignIn extends Component {
     }
   }
 
-  handleSubmit = e => {
+  handleSubmit = (e, loginCustomer) => {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         // eslint-disable-next-line no-console
-        console.log('Received values of form: ', values)
+        loginCustomer({ variables: values })
       }
     })
   }
@@ -81,53 +94,65 @@ class SignIn extends Component {
       <BodyWrapper>
         <Wrapper>
           <Header>Sign In</Header>
-          <Form {...formItemLayout} onSubmit={this.handleSubmit}>
-            <Form.Item label="E-mail">
-              {getFieldDecorator('email', {
-                rules: [
-                  {
-                    type: 'email',
-                    message: 'The input is not valid E-mail!'
-                  },
-                  {
-                    required: true,
-                    message: 'Please input your E-mail!'
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="Password" hasFeedback>
-              {getFieldDecorator('password', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your password!'
-                  },
-                  {
-                    validator: this.validateToNextPassword
-                  }
-                ]
-              })(<Input.Password />)}
-            </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
-              <ButtonContainer>
-                <Button type="primary" htmlType="submit">
-                  Sign In
-                </Button>
-              </ButtonContainer>
-            </Form.Item>
-            <DividerContainer>
-              <Divider />
-            </DividerContainer>
-            <SignUpText>New to Joe&apos;s Odd Jobs?</SignUpText>
-            <Form.Item {...tailFormItemLayout}>
-              <ButtonContainer>
-                <Button type="primary" htmlType="submit">
-                  Create Your Account
-                </Button>
-              </ButtonContainer>
-            </Form.Item>
-          </Form>
+          <Mutation
+            mutation={LOGIN}
+            onCompleted={data => {
+              storeCustomer(data)
+            }}
+          >
+            {loginCustomer => (
+              <Form
+                {...formItemLayout}
+                onSubmit={e => this.handleSubmit(e, loginCustomer)}
+              >
+                <Form.Item label="E-mail">
+                  {getFieldDecorator('email', {
+                    rules: [
+                      {
+                        type: 'email',
+                        message: 'The input is not valid E-mail!'
+                      },
+                      {
+                        required: true,
+                        message: 'Please input your E-mail!'
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="Password" hasFeedback>
+                  {getFieldDecorator('password', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input your password!'
+                      },
+                      {
+                        validator: this.validateToNextPassword
+                      }
+                    ]
+                  })(<Input.Password />)}
+                </Form.Item>
+                <Form.Item {...tailFormItemLayout}>
+                  <ButtonContainer>
+                    <Button type="primary" htmlType="submit">
+                      Sign In
+                    </Button>
+                  </ButtonContainer>
+                </Form.Item>
+                <DividerContainer>
+                  <Divider />
+                </DividerContainer>
+                <SignUpText>New to Joe&apos;s Odd Jobs?</SignUpText>
+                <Form.Item {...tailFormItemLayout}>
+                  <ButtonContainer>
+                    <Button type="primary" htmlType="submit">
+                      <Link to="/sign-up">Create Your Account</Link>
+                    </Button>
+                  </ButtonContainer>
+                </Form.Item>
+              </Form>
+            )}
+          </Mutation>
         </Wrapper>
       </BodyWrapper>
     )

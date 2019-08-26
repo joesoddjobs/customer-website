@@ -15,6 +15,7 @@
     "craco-antd": "^1.11.0",
     "craco-less": "^1.9.0",
     "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1",
     "react": "^16.4.1",
     "react-apollo": "^2.1.5",
     "react-dom": "^16.4.1",

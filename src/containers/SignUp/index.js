@@ -2,8 +2,21 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react'
-import { Form, Input, Checkbox, Button } from 'antd'
+import { Form, Input, Checkbox, Button, Alert } from 'antd'
 import { Wrapper, BodyWrapper, Header } from './styles'
+import REGISTER from './graphql'
+import { Mutation } from 'react-apollo'
+
+const storeCustomer = async ({
+  registerCustomer: { customer, token, error }
+}) => {
+  if (!error) {
+    await localStorage.setItem('token', token)
+    await localStorage.setItem('customerId', customer.id)
+  } else {
+    Alert('Could not register! Please try again!')
+  }
+}
 
 class SignUp extends Component {
   constructor(props) {
@@ -15,12 +28,15 @@ class SignUp extends Component {
     }
   }
 
-  handleSubmit = e => {
+  handleSubmit = (e, registerCustomer) => {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        const variables = { input: values }
         // eslint-disable-next-line no-console
-        console.log('Received values of form: ', values)
+        delete variables.input.agreement
+        delete variables.input.confirm
+        registerCustomer({ variables })
       }
     })
   }
@@ -77,91 +93,106 @@ class SignUp extends Component {
       <BodyWrapper>
         <Wrapper>
           <Header>Create Account</Header>
-          <Form {...formItemLayout} onSubmit={this.handleSubmit}>
-            <Form.Item label="First Name">
-              {getFieldDecorator('firstName', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your first name!',
-                    whitespace: true
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="Last Name">
-              {getFieldDecorator('lastName', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your last name!',
-                    whitespace: true
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="E-mail">
-              {getFieldDecorator('email', {
-                rules: [
-                  {
-                    type: 'email',
-                    message: 'The input is not valid E-mail!'
-                  },
-                  {
-                    required: true,
-                    message: 'Please input your E-mail!'
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="Password" hasFeedback>
-              {getFieldDecorator('password', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your password!'
-                  },
-                  {
-                    validator: this.validateToNextPassword
-                  }
-                ]
-              })(<Input.Password />)}
-            </Form.Item>
-            <Form.Item label="Confirm Password" hasFeedback>
-              {getFieldDecorator('confirm', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please confirm your password!'
-                  },
-                  {
-                    validator: this.compareToFirstPassword
-                  }
-                ]
-              })(<Input.Password onBlur={this.handleConfirmBlur} />)}
-            </Form.Item>
-            <Form.Item label="Phone Number">
-              {getFieldDecorator('phone', {
-                rules: [
-                  { required: true, message: 'Please input your phone number!' }
-                ]
-              })(<Input style={{ width: '100%' }} />)}
-            </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
-              {getFieldDecorator('agreement', {
-                valuePropName: 'checked'
-              })(
-                <Checkbox>
-                  I have read the <a href="">agreement</a>
-                </Checkbox>
-              )}
-            </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">
-                Create Account
-              </Button>
-            </Form.Item>
-          </Form>
+          <Mutation
+            mutation={REGISTER}
+            onCompleted={data => {
+              storeCustomer(data)
+            }}
+          >
+            {registerCustomer => (
+              <Form
+                {...formItemLayout}
+                onSubmit={e => this.handleSubmit(e, registerCustomer)}
+              >
+                <Form.Item label="First Name">
+                  {getFieldDecorator('firstName', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input your first name!',
+                        whitespace: true
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="Last Name">
+                  {getFieldDecorator('lastName', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input your last name!',
+                        whitespace: true
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="E-mail">
+                  {getFieldDecorator('email', {
+                    rules: [
+                      {
+                        type: 'email',
+                        message: 'The input is not valid E-mail!'
+                      },
+                      {
+                        required: true,
+                        message: 'Please input your E-mail!'
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="Password" hasFeedback>
+                  {getFieldDecorator('password', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input your password!'
+                      },
+                      {
+                        validator: this.validateToNextPassword
+                      }
+                    ]
+                  })(<Input.Password />)}
+                </Form.Item>
+                <Form.Item label="Confirm Password" hasFeedback>
+                  {getFieldDecorator('confirm', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please confirm your password!'
+                      },
+                      {
+                        validator: this.compareToFirstPassword
+                      }
+                    ]
+                  })(<Input.Password onBlur={this.handleConfirmBlur} />)}
+                </Form.Item>
+                <Form.Item label="Phone Number">
+                  {getFieldDecorator('phoneNumber', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input your phone number!'
+                      }
+                    ]
+                  })(<Input style={{ width: '100%' }} />)}
+                </Form.Item>
+                <Form.Item {...tailFormItemLayout}>
+                  {getFieldDecorator('agreement', {
+                    valuePropName: 'checked'
+                  })(
+                    <Checkbox>
+                      I have read the <a href="">agreement</a>
+                    </Checkbox>
+                  )}
+                </Form.Item>
+                <Form.Item {...tailFormItemLayout}>
+                  <Button type="primary" htmlType="submit">
+                    Create Account
+                  </Button>
+                </Form.Item>
+              </Form>
+            )}
+          </Mutation>
         </Wrapper>
       </BodyWrapper>
     )
