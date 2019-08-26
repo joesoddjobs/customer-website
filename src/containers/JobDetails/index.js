@@ -85,7 +85,6 @@ const Info = () => (
                 No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China
               </Descriptions.Item>
             </Descriptions>
-            ,
           </TabPane>
           <TabPane tab="Worker Details" key="2">
             <HeaderText>Workers</HeaderText>
