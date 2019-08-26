@@ -28,7 +28,7 @@ class SignUp extends Component {
     }
   }
 
-  handleSubmit = (e, registerCustomer) => {
+  handleSubmit = (e, history, registerCustomer) => {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -37,6 +37,9 @@ class SignUp extends Component {
         delete variables.input.agreement
         delete variables.input.confirm
         registerCustomer({ variables })
+        history.push({
+          pathname: '/job-dashboard'
+        })
       }
     })
   }
@@ -64,6 +67,7 @@ class SignUp extends Component {
   }
 
   render() {
+    const { history } = this.props
     const { getFieldDecorator } = this.props.form
 
     const formItemLayout = {
@@ -102,7 +106,7 @@ class SignUp extends Component {
             {registerCustomer => (
               <Form
                 {...formItemLayout}
-                onSubmit={e => this.handleSubmit(e, registerCustomer)}
+                onSubmit={e => this.handleSubmit(e, history, registerCustomer)}
               >
                 <Form.Item label="First Name">
                   {getFieldDecorator('firstName', {

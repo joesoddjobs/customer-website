@@ -17,7 +17,6 @@ const storeCustomer = async ({ loginCustomer: { customer, token, error } }) => {
   if (!error) {
     await localStorage.setItem('token', token)
     await localStorage.setItem('customerId', customer.id)
-    console.log(await localStorage.getItem('customerId'))
   } else {
     Alert('Could not register! Please try again!')
   }
@@ -33,12 +32,16 @@ class SignIn extends Component {
     }
   }
 
-  handleSubmit = (e, loginCustomer) => {
+  handleSubmit = (e, history, loginCustomer) => {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         // eslint-disable-next-line no-console
         loginCustomer({ variables: values })
+        // navigate to job dashboard:
+        history.push({
+          pathname: '/job-dashboard'
+        })
       }
     })
   }
@@ -66,6 +69,7 @@ class SignIn extends Component {
   }
 
   render() {
+    const { history } = this.props
     const { getFieldDecorator } = this.props.form
 
     const formItemLayout = {
@@ -103,7 +107,7 @@ class SignIn extends Component {
             {loginCustomer => (
               <Form
                 {...formItemLayout}
-                onSubmit={e => this.handleSubmit(e, loginCustomer)}
+                onSubmit={e => this.handleSubmit(e, history, loginCustomer)}
               >
                 <Form.Item label="E-mail">
                   {getFieldDecorator('email', {
