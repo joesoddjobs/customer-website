@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { ApolloProvider } from 'react-apollo'
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
+import localStore from 'store'
 import { ThemeProvider } from 'styled-components'
 import theme from './theme'
 import client from './client'
@@ -10,11 +11,12 @@ import SignUp from './containers/SignUp/'
 import WrappedSignIn from './containers/SignIn/'
 import JobDetails from './containers/JobDetails/'
 import JobDashboard from './containers/JobDashboard/'
-import YourJobs from './containers/YourJobs/'
+import Profile from './containers/Profile'
+import EditProfile from './containers/EditProfile'
 import { Footer, NavBarSignedIn, NavBarSignedOut } from './components'
 
 const isSignedIn = async () => {
-  const token = await localStorage.getItem('token')
+  const { token } = await localStore.get('user')
   return token !== null
 }
 
@@ -44,7 +46,8 @@ class App extends Component {
               <Route path="/job-details" component={JobDetails} />
               <Route path="/create-job" component={CreateJob} />
               <Route path="/job-dashboard" component={JobDashboard} />
-              <Route path="/your-jobs" component={YourJobs} />
+              <Route path="/edit-profile" component={EditProfile} />
+              <Route path="/profile" component={Profile} />
             </Switch>
             <Footer />
           </ApolloProvider>

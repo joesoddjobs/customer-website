@@ -1,4 +1,5 @@
 import React from 'react'
+import localStore from 'store'
 import Header from './components/Header'
 import {
   Container,
@@ -9,7 +10,7 @@ import {
 } from './styles'
 import { Descriptions, Button } from 'antd'
 
-const Info = () => (
+const Info = ({ history }) => (
   <Container>
     <Header />
     <BodyWrapper>
@@ -30,12 +31,24 @@ const Info = () => (
         </Descriptions>
         <ButtonContainer>
           <Spacer>
-            <Button type="primary" htmlType="submit">
+            <Button
+              onClick={() => history.push({ pathname: '/edit-profile' })}
+              type="primary"
+              htmlType="submit"
+            >
               Edit Profile
             </Button>
           </Spacer>
           <Spacer>
-            <Button type="primary" htmlType="submit">
+            <Button
+              onClick={async () => {
+                await localStore.remove('user')
+                history.push({ pathname: '/' })
+                window.location.reload()
+              }}
+              type="primary"
+              htmlType="submit"
+            >
               Sign Out
             </Button>
           </Spacer>
