@@ -4,6 +4,8 @@
 import React, { Component } from 'react'
 import { Form, Input, InputNumber, Button, DatePicker, Radio } from 'antd'
 import { Wrapper, BodyWrapper, Header } from './styles'
+import CREATE_JOB from './graphql'
+import { Mutation } from 'react-apollo'
 
 const { TextArea } = Input
 
@@ -17,12 +19,20 @@ class SignUp extends Component {
     }
   }
 
-  handleSubmit = e => {
+  handleSubmit = (e, history, createNewJob) => {
     e.preventDefault()
-    this.props.form.validateFieldsAndScroll((err, values) => {
+    this.props.form.validateFieldsAndScroll(async (err, values) => {
       if (!err) {
         // eslint-disable-next-line no-console
-        console.log('Received values of form: ', values)
+        const { street, state, postalCode, city } = values
+        const address = { street, state, postalCode, city }
+        const cleanedValues = { ...values, address }
+        delete cleanedValues.street
+        delete cleanedValues.state
+        delete cleanedValues.postalCode
+        delete cleanedValues.city
+        const variables = { input: cleanedValues }
+        createNewJob({ variables })
       }
     })
   }
@@ -50,6 +60,7 @@ class SignUp extends Component {
   }
 
   render() {
+    const { history } = this.props
     const { getFieldDecorator } = this.props.form
 
     const formItemLayout = {
@@ -79,122 +90,138 @@ class SignUp extends Component {
       <BodyWrapper>
         <Wrapper>
           <Header>Book a Job</Header>
-          <Form {...formItemLayout} onSubmit={this.handleSubmit}>
-            <Form.Item label="Job Type">
-              {getFieldDecorator('radio-button', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input the job type!',
-                    whitespace: true
-                  }
-                ]
-              })(
-                <Radio.Group>
-                  <Radio.Button value="landscaping">Landscaping</Radio.Button>
-                  <Radio.Button value="lawnmowing">Lawn Mowing</Radio.Button>
-                  <Radio.Button value="moving">Moving</Radio.Button>
-                  <Radio.Button value="furniture">
-                    Furniture Assembly
-                  </Radio.Button>
-                  <Radio.Button value="painting">Painting</Radio.Button>
-                  <Radio.Button value="cleaning">Cleaning</Radio.Button>
-                  <Radio.Button value="opther">Other</Radio.Button>
-                </Radio.Group>
-              )}
-            </Form.Item>
-            <Form.Item label="Job Description">
-              {getFieldDecorator('job-description')(
-                <TextArea placeholder="Description" autosize />
-              )}
-            </Form.Item>
-            <Form.Item label="Number of Workers">
-              {getFieldDecorator('worker-estimate', {
-                initialValue: 1,
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input the number of workers!',
-                    whitespace: true
-                  }
-                ]
-              })(<InputNumber min={1} max={10} />)}
-              <span className="ant-form-text"> worker(s)</span>
-            </Form.Item>
-            <Form.Item label="Time Estimate">
-              {getFieldDecorator('time-estimate', {
-                initialValue: 1,
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input a time estimate!',
-                    whitespace: true
-                  }
-                ]
-              })(<InputNumber min={1} max={10} />)}
-              <span className="ant-form-text"> hour(s)</span>
-            </Form.Item>
-            <Form.Item label="Job Date and Time">
-              {getFieldDecorator('date-time-picker', {
-                rules: [
-                  {
-                    type: 'object',
-                    required: true,
-                    message: 'Please select a date and time!'
-                  }
-                ]
-              })(<DatePicker showTime />)}
-            </Form.Item>
-            <Form.Item label="Secondary Date and Time">
-              {getFieldDecorator('date-time-picker2', {
-                rules: [
-                  {
-                    type: 'object',
-                    required: true,
-                    message: 'Please select a secondary date and time!'
-                  }
-                ]
-              })(<DatePicker showTime />)}
-            </Form.Item>
-            <Form.Item label="Job Location (City)">
-              {getFieldDecorator('city', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input the city the job is in!',
-                    whitespace: true
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="Job Location (Street Adress)">
-              {getFieldDecorator('adress', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input the job street adress!',
-                    whitespace: true
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="Job Location (Zip Code)">
-              {getFieldDecorator('adress', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input the job adress!',
-                    whitespace: true
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">
-                Book Now
-              </Button>
-            </Form.Item>
-          </Form>
+          <Mutation
+            mutation={CREATE_JOB}
+            onCompleted={data => {
+              history.push({ pathname: '/job-dashboard' })
+            }}
+          >
+            {createNewJob => (
+              <Form
+                {...formItemLayout}
+                onSubmit={e => this.handleSubmit(e, history, createNewJob)}
+              >
+                <Form.Item label="Job Type">
+                  {getFieldDecorator('jobType', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input the job type!',
+                        whitespace: true
+                      }
+                    ]
+                  })(
+                    <Radio.Group>
+                      <Radio.Button value="LANDSCAPING">
+                        Landscaping
+                      </Radio.Button>
+                      <Radio.Button value="LAWNMOWING">
+                        Lawn Mowing
+                      </Radio.Button>
+                      <Radio.Button value="MOVING">Moving</Radio.Button>
+                      <Radio.Button value="FURNITURE_ASSEMBLY">
+                        Furniture Assembly
+                      </Radio.Button>
+                      <Radio.Button value="PAINTING">Painting</Radio.Button>
+                      <Radio.Button value="CLEANING">Cleaning</Radio.Button>
+                      <Radio.Button value="POWER_WASHING">
+                        Power Washing
+                      </Radio.Button>
+                      <Radio.Button value="OTHER">Other</Radio.Button>
+                    </Radio.Group>
+                  )}
+                </Form.Item>
+                <Form.Item label="Job Description">
+                  {getFieldDecorator('jobDescription')(
+                    <TextArea placeholder="Description" autosize />
+                  )}
+                </Form.Item>
+                <Form.Item label="Number of Workers">
+                  {getFieldDecorator('numberOfContractors', {
+                    initialValue: 1
+                  })(<InputNumber min={1} max={10} />)}
+                  <span className="ant-form-text"> worker(s)</span>
+                </Form.Item>
+                <Form.Item label="Time Estimate">
+                  {getFieldDecorator('estimatedTime', {
+                    initialValue: 1
+                  })(<InputNumber min={1} max={10} />)}
+                  <span className="ant-form-text"> hour(s)</span>
+                </Form.Item>
+                <Form.Item label="Job Date and Time">
+                  {getFieldDecorator('firstChoiceDateTime', {
+                    rules: [
+                      {
+                        type: 'object',
+                        required: true,
+                        message: 'Please select a date and time!'
+                      }
+                    ]
+                  })(<DatePicker showTime />)}
+                </Form.Item>
+                <Form.Item label="Secondary Date and Time">
+                  {getFieldDecorator('secondChoiceDateTime', {
+                    rules: [
+                      {
+                        type: 'object',
+                        required: true,
+                        message: 'Please select a secondary date and time!'
+                      }
+                    ]
+                  })(<DatePicker showTime />)}
+                </Form.Item>
+                <Form.Item label="Job Location (City)">
+                  {getFieldDecorator('city', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input the city the job is in!',
+                        whitespace: true
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="Job Location (State)">
+                  {getFieldDecorator('state', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input state of the job location!',
+                        whitespace: true
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="Job Location (Street Adress)">
+                  {getFieldDecorator('street', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input the job street address!',
+                        whitespace: true
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="Job Location (Zip Code)">
+                  {getFieldDecorator('postalCode', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input the job postal code!',
+                        whitespace: true
+                      }
+                    ]
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item {...tailFormItemLayout}>
+                  <Button type="primary" htmlType="submit">
+                    Book Now
+                  </Button>
+                </Form.Item>
+              </Form>
+            )}
+          </Mutation>
         </Wrapper>
       </BodyWrapper>
     )

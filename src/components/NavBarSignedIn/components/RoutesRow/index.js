@@ -5,8 +5,8 @@ const routeInfo = [
   { name: 'Home', path: '/' },
   { name: 'How it Works', path: '/info' },
   { name: 'Testimonials', path: '/testimonials' },
-  { name: 'Profile', path: '/profile'},
-  { name: 'Job Dashboard', path: '/dashboard' }
+  { name: 'Profile', path: '/profile' },
+  { name: 'Job Dashboard', path: '/job-dashboard' }
 ]
 
 const Routes = routeInfo.map(route => (
@@ -18,7 +18,7 @@ const Routes = routeInfo.map(route => (
 const RoutesRow = () => (
   <Container>
     {Routes}
-    <BookJobButton to="/book-a-job">Book a Job</BookJobButton>
+    <BookJobButton to="/create-job">Book a Job</BookJobButton>
   </Container>
 )
 

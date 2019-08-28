@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Input, Divider, Button, Alert } from 'antd'
 import { Mutation } from 'react-apollo'
+import localStore from 'store'
 import LOGIN from './graphql'
 import {
   Wrapper,
@@ -15,8 +16,8 @@ import {
 
 const storeCustomer = async ({ loginCustomer: { customer, token, error } }) => {
   if (!error) {
-    await localStorage.setItem('token', token)
-    await localStorage.setItem('customerId', customer.id)
+    await localStore.set('user', { token })
+    window.location.reload()
   } else {
     Alert('Could not register! Please try again!')
   }

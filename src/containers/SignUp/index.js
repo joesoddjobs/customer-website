@@ -5,14 +5,15 @@ import React, { Component } from 'react'
 import { Form, Input, Checkbox, Button, Alert } from 'antd'
 import { Wrapper, BodyWrapper, Header } from './styles'
 import REGISTER from './graphql'
+import localStore from 'store'
 import { Mutation } from 'react-apollo'
 
 const storeCustomer = async ({
   registerCustomer: { customer, token, error }
 }) => {
   if (!error) {
-    await localStorage.setItem('token', token)
-    await localStorage.setItem('customerId', customer.id)
+    await localStore.set('user', { token })
+    window.location.reload()
   } else {
     Alert('Could not register! Please try again!')
   }
