@@ -2,31 +2,10 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Paper from '@material-ui/core/Paper'
-import Stepper from '@material-ui/core/Stepper'
-import Step from '@material-ui/core/Step'
-import StepLabel from '@material-ui/core/StepLabel'
 import Button from '@material-ui/core/Button'
-import Link from '@material-ui/core/Link'
 import Typography from '@material-ui/core/Typography'
-import AddressForm from './components/AdressForm'
-import PaymentForm from './components/PaymentForm'
-import Review from './components/Review'
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'. Built with '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Material-UI.
-      </Link>
-    </Typography>
-  )
-}
+import PaypalExpressBtn from 'react-paypal-express-checkout'
+import { Container, Spacer, ButtonContainer } from './styles'
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -65,31 +44,35 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const steps = ['Shipping address', 'Payment details', 'Review your order']
-
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <AddressForm />
-    case 1:
-      return <PaymentForm />
-    case 2:
-      return <Review />
-    default:
-      throw new Error('Unknown step')
-  }
-}
-
-export default function Checkout() {
+const Checkout = () => {
   const classes = useStyles()
-  const [activeStep, setActiveStep] = React.useState(0)
 
-  const handleNext = () => {
-    setActiveStep(activeStep + 1)
+  const onSuccess = payment => {
+    // Congratulation, it came here means everything's fine!
+    console.log('The payment was succeeded!', payment)
+    // You can bind the "payment" object's value to your state or props or whatever here, please see below for sample returned data
   }
 
-  const handleBack = () => {
-    setActiveStep(activeStep - 1)
+  const onCancel = data => {
+    // User pressed "cancel" or close Paypal's popup!
+    console.log('The payment was cancelled!', data)
+    // You can bind the "data" object's value to your state or props or whatever here, please see below for sample returned data
+  }
+
+  const onError = err => {
+    // The main Paypal's script cannot be loaded or somethings block the loading of that script!
+    console.log('Error!', err)
+    // Because the Paypal's main script is loaded asynchronously from "https://www.paypalobjects.com/api/checkout.js"
+    // => sometimes it may take about 0.5 second for everything to get set, or for the button to appear
+  }
+
+  const env = 'sandbox' // you can set here to 'production' for production
+  const currency = 'USD' // or you can set this value from your props or state
+  const total = 1
+
+  const client = {
+    sandbox: 'YOUR-SANDBOX-APP-ID',
+    production: 'YOUR-PRODUCTION-APP-ID'
   }
 
   return (
@@ -100,49 +83,39 @@ export default function Checkout() {
           <Typography component="h1" variant="h4" align="center">
             Checkout
           </Typography>
-          <Stepper activeStep={activeStep} className={classes.stepper}>
-            {steps.map(label => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+
           <React.Fragment>
-            {activeStep === steps.length ? (
-              <React.Fragment>
-                <Typography variant="h5" gutterBottom>
-                  Thank you for your order.
-                </Typography>
-                <Typography variant="subtitle1">
-                  Your order number is #2001539. We have emailed your order
-                  confirmation, and will send you an update when your order has
-                  shipped.
-                </Typography>
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                {getStepContent(activeStep)}
-                <div className={classes.buttons}>
-                  {activeStep !== 0 && (
-                    <Button onClick={handleBack} className={classes.button}>
-                      Back
-                    </Button>
-                  )}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    className={classes.button}
-                  >
-                    {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
-                  </Button>
-                </div>
-              </React.Fragment>
-            )}
+            <Container>
+              <Typography variant="h5" gutterBottom>
+                Estimated Job Time: 4 hours
+              </Typography>
+              <Typography variant="h5" gutterBottom>
+                Estimated Job Cost: $80
+              </Typography>
+              <Spacer />
+              <Typography variant="subtitle1">
+                Job price estimates reflect the time estimate provided in the
+                job request. Jobs which take longer or shorter time periods will
+                differ in cost accordingly.
+              </Typography>
+            </Container>
+            <ButtonContainer>
+              <Button className={classes.button}>Back</Button>
+              <PaypalExpressBtn
+                env={env}
+                client={client}
+                currency={currency}
+                total={total}
+                onError={onError}
+                onSuccess={onSuccess}
+                onCancel={onCancel}
+              />
+            </ButtonContainer>
           </React.Fragment>
         </Paper>
-        <Copyright />
       </main>
     </React.Fragment>
   )
 }
+
+export default Checkout
