@@ -12,7 +12,9 @@ import WrappedSignIn from './containers/SignIn/'
 import JobDetails from './containers/JobDetails/'
 import JobDashboard from './containers/JobDashboard/'
 import Profile from './containers/Profile'
+import Info from './containers/Info'
 import EditProfile from './containers/EditProfile'
+import Testimonials from './containers/Testimonials'
 import { Footer, NavBarSignedIn, NavBarSignedOut } from './components'
 
 const isSignedIn = async () => {
@@ -48,6 +50,8 @@ class App extends Component {
               <Route path="/job-dashboard" component={JobDashboard} />
               <Route path="/edit-profile" component={EditProfile} />
               <Route path="/profile" component={Profile} />
+              <Route path="/info" component={Info} />
+              <Route path="/testimonials" component={Testimonials} />
             </Switch>
             <Footer />
           </ApolloProvider>
