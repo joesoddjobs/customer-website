@@ -24,8 +24,9 @@ class EditProfile extends Component {
         const variables = { input: values }
         editCustomer({ variables })
         history.push({
-          pathname: '/'
+          pathname: '/profile'
         })
+        window.location.reload()
       }
     })
   }
