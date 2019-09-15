@@ -3,9 +3,11 @@
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react'
 import { Form, Input, Button } from 'antd'
+import { Mutation, Query } from 'react-apollo'
 import { Wrapper, BodyWrapper, Header } from './styles'
+import { EDIT_CUSTOMER, CURRENT_CUSTOMER } from './graphql'
 
-class SignUp extends Component {
+class EditProfile extends Component {
   constructor(props) {
     super(props)
     this._validAuthStates = ['signUp']
@@ -15,15 +17,15 @@ class SignUp extends Component {
     }
   }
 
-  handleSubmit = (e, registerCustomer) => {
+  handleSubmit = (e, history, editCustomer) => {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const variables = { input: values }
-        // eslint-disable-next-line no-console
-        delete variables.input.agreement
-        delete variables.input.confirm
-        registerCustomer({ variables })
+        editCustomer({ variables })
+        history.push({
+          pathname: '/'
+        })
       }
     })
   }
@@ -51,6 +53,7 @@ class SignUp extends Component {
   }
 
   render() {
+    const { history } = this.props
     const { getFieldDecorator } = this.props.form
 
     const formItemLayout = {
@@ -80,108 +83,86 @@ class SignUp extends Component {
       <BodyWrapper>
         <Wrapper>
           <Header>Edit Profile</Header>
-          <Form {...formItemLayout} onSubmit={e => this.handleSubmit(e)}>
-            <Form.Item label="First Name">
-              {getFieldDecorator('firstName', {
-                initialValue: 'joe',
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your first name!',
-                    whitespace: true
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="Last Name">
-              {getFieldDecorator('lastName', {
-                initialValue: "o'keefe",
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your last name!',
-                    whitespace: true
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="E-mail">
-              {getFieldDecorator('email', {
-                initialValue: 'josephokeefe3@gmail.com',
-                rules: [
-                  {
-                    type: 'email',
-                    message: 'The input is not valid E-mail!'
-                  },
-                  {
-                    required: true,
-                    message: 'Please input your E-mail!'
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <Form.Item label="Old Password" hasFeedback>
-              {getFieldDecorator('oldPassword', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your old password!'
-                  },
-                  {
-                    validator: this.validateToNextPassword
-                  }
-                ]
-              })(<Input.Password />)}
-            </Form.Item>
-            <Form.Item label="New Password" hasFeedback>
-              {getFieldDecorator('password', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your password!'
-                  },
-                  {
-                    validator: this.validateToNextPassword
-                  }
-                ]
-              })(<Input.Password />)}
-            </Form.Item>
-            <Form.Item label="Confirm Password" hasFeedback>
-              {getFieldDecorator('confirm', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please confirm your password!'
-                  },
-                  {
-                    validator: this.compareToFirstPassword
-                  }
-                ]
-              })(<Input.Password onBlur={this.handleConfirmBlur} />)}
-            </Form.Item>
-            <Form.Item label="Phone Number">
-              {getFieldDecorator('phoneNumber', {
-                initialValue: '2018881668',
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your phone number!'
-                  }
-                ]
-              })(<Input style={{ width: '100%' }} />)}
-            </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">
-                Edit Profile
-              </Button>
-            </Form.Item>
-          </Form>
+          <Query query={CURRENT_CUSTOMER}>
+            {({ loading, data }) => {
+              if (loading) return null
+              return (
+                <Mutation mutation={EDIT_CUSTOMER}>
+                  {editCustomer => (
+                    <Form
+                      {...formItemLayout}
+                      onSubmit={e =>
+                        this.handleSubmit(e, history, editCustomer)
+                      }
+                    >
+                      <Form.Item label="First Name">
+                        {getFieldDecorator('firstName', {
+                          initialValue: data.currentCustomer.customer.firstName,
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Please input your first name!',
+                              whitespace: true
+                            }
+                          ]
+                        })(<Input />)}
+                      </Form.Item>
+                      <Form.Item label="Last Name">
+                        {getFieldDecorator('lastName', {
+                          initialValue: data.currentCustomer.customer.lastName,
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Please input your last name!',
+                              whitespace: true
+                            }
+                          ]
+                        })(<Input />)}
+                      </Form.Item>
+                      <Form.Item label="E-mail">
+                        {getFieldDecorator('email', {
+                          initialValue: data.currentCustomer.customer.email,
+                          rules: [
+                            {
+                              type: 'email',
+                              message: 'The input is not valid E-mail!'
+                            },
+                            {
+                              required: true,
+                              message: 'Please input your E-mail!'
+                            }
+                          ]
+                        })(<Input />)}
+                      </Form.Item>
+                      <Form.Item label="Phone Number">
+                        {getFieldDecorator('phoneNumber', {
+                          initialValue:
+                            data.currentCustomer.customer.phoneNumber,
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Please input your phone number!'
+                            }
+                          ]
+                        })(<Input style={{ width: '100%' }} />)}
+                      </Form.Item>
+                      <Form.Item {...tailFormItemLayout}>
+                        <Button type="primary" htmlType="submit">
+                          Edit Profile
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  )}
+                </Mutation>
+              )
+            }}
+          </Query>
         </Wrapper>
       </BodyWrapper>
     )
   }
 }
 
-const WrappedSignUp = Form.create({ name: 'register' })(SignUp)
+const WrappedEditProfile = Form.create({ name: 'register' })(EditProfile)
 
-export default WrappedSignUp
+export default WrappedEditProfile
