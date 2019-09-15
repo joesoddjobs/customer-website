@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Header from './components/Header'
+import { Link } from 'react-router-dom'
 import { Container, Wrapper, BodyWrapper, HeaderText } from './styles'
 import { Table } from 'antd'
 import CURRENT_CUSTOMER from './graphql'
@@ -25,9 +26,18 @@ const columns = [
   {
     title: 'Action',
     key: 'info',
-    render: (text, record) => (
+    render: job => (
       <span>
-        <a href="javascript:;">View Info</a>
+        <Link
+          to={{
+            pathname: 'job-details',
+            state: {
+              job
+            }
+          }}
+        >
+          View Info
+        </Link>
       </span>
     )
   }
@@ -57,60 +67,45 @@ const columns = [
 //   }
 // ]
 
-const Info = () => {
-  const [activeJobsQuery, updateActiveJobs] = useState([])
-  const [completedJobsQuery, updateCompletedJobs] = useState([])
-  return (
-    <Container>
-      <Header />
-      <Query
-        query={CURRENT_CUSTOMER}
-        onCompleted={data => {
-          if (data.currentCustomer.customer) {
-            const { activeJobs, completedJobs } = data.currentCustomer.customer
-            const formattedActive = activeJobs.map(job => {
-              if (job.scheduledDateTime) {
-                const duration = moment.duration(
-                  job.scheduledDateTime,
-                  'seconds'
-                )
-                const dateTime = moment(duration).format('llll')
-                return { ...job, dateTime }
-              }
-              return { ...job, dateTime: 'Not Scheduled Yet! ' }
-            })
-            const formattedCompleted = completedJobs.map(job => {
-              if (job.scheduledDateTime) {
-                const duration = moment.duration(
-                  job.scheduledDateTime,
-                  'seconds'
-                )
-                const dateTime = moment(duration).format('llll')
-                return { ...job, dateTime }
-              }
-              return { ...job, dateTime: 'Not Scheduled Yet! ' }
-            })
-            updateActiveJobs(formattedActive)
-            updateCompletedJobs(formattedCompleted)
-          }
-        }}
-      >
-        {({ loading, data }) => {
-          if (loading) return null
+const Info = () => (
+  <Container>
+    <Header />
+    <Query query={CURRENT_CUSTOMER}>
+      {({ loading, data }) => {
+        if (loading) return null
+        if (data.currentCustomer.customer) {
+          const { activeJobs, completedJobs } = data.currentCustomer.customer
+          const formattedActive = activeJobs.map(job => {
+            if (job.scheduledDateTime) {
+              const duration = moment.duration(job.scheduledDateTime, 'seconds')
+              const dateTime = moment(duration).format('llll')
+              return { ...job, dateTime }
+            }
+            return { ...job, dateTime: 'Not Scheduled Yet!' }
+          })
+          const formattedCompleted = completedJobs.map(job => {
+            if (job.scheduledDateTime) {
+              const duration = moment.duration(job.scheduledDateTime, 'seconds')
+              const dateTime = moment(duration).format('llll')
+              return { ...job, dateTime }
+            }
+            return { ...job, dateTime: 'Not Scheduled Yet!' }
+          })
           return (
             <BodyWrapper>
               <Wrapper>
                 <HeaderText>Scheduled Jobs</HeaderText>
-                <Table columns={columns} dataSource={activeJobsQuery} />
+                <Table columns={columns} dataSource={formattedActive} />
                 <HeaderText>Past Jobs</HeaderText>
-                <Table columns={columns} dataSource={completedJobsQuery} />
+                <Table columns={columns} dataSource={formattedCompleted} />
               </Wrapper>
             </BodyWrapper>
           )
-        }}
-      </Query>
-    </Container>
-  )
-}
+        }
+        return null
+      }}
+    </Query>
+  </Container>
+)
 
 export default Info

@@ -16,7 +16,7 @@ const IntroBlock = () => (
         Tackle the projects that the landscapers, movers, and contractors
         won&apos;t even call you back for, with Joe&apos;s Odd Jobs
       </Info>
-      <BookAJobButton to="/">Book a Job</BookAJobButton>
+      <BookAJobButton to="/create-job">Book a Job</BookAJobButton>
     </InfoContainer>
     <Image />
   </Container>
