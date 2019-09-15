@@ -18,8 +18,12 @@ import Testimonials from './containers/Testimonials'
 import { Footer, NavBarSignedIn, NavBarSignedOut } from './components'
 
 const isSignedIn = async () => {
-  const { token } = await localStore.get('user')
-  return token !== null
+  const store = await localStore.get('user')
+  if (store) {
+    const { token } = store
+    return Boolean(token)
+  }
+  return false
 }
 
 class App extends Component {
@@ -29,7 +33,7 @@ class App extends Component {
 
   componentDidMount = () => {
     isSignedIn()
-      .then(res => this.setState({ signedIn: res, loading: false }))
+      .then(res => this.setState({ signedIn: res }))
       .catch(() => alert('An error occurred'))
   }
 

@@ -20,6 +20,17 @@ const CURRENT_CUSTOMER = gql`
           jobDescription
           status
           scheduledDateTime
+          address {
+            state
+            postalCode
+            street
+            city
+          }
+          contractors {
+            firstName
+            lastName
+            phoneNumber
+          }
         }
         activeJobs {
           id
@@ -27,6 +38,17 @@ const CURRENT_CUSTOMER = gql`
           jobDescription
           status
           scheduledDateTime
+          address {
+            state
+            postalCode
+            street
+            city
+          }
+          contractors {
+            firstName
+            lastName
+            phoneNumber
+          }
         }
         completedJobs {
           id
@@ -34,6 +56,17 @@ const CURRENT_CUSTOMER = gql`
           jobDescription
           status
           scheduledDateTime
+          address {
+            state
+            postalCode
+            street
+            city
+          }
+          contractors {
+            firstName
+            lastName
+            phoneNumber
+          }
         }
       }
     }

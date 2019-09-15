@@ -15,7 +15,7 @@ const Header = () => (
       customers fufill jobs they may not have time for, may not know how to do,
       or just don’t want to do at all
     </BodyText>
-    <BookAJobButton to="/">Book a Job</BookAJobButton>
+    <BookAJobButton to="/create-job">Book a Job</BookAJobButton>
     <Image />
   </Container>
 )
